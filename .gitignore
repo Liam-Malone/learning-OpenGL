@@ -1,0 +1,12 @@
+# ignore log files
+*.log
+
+# ignore build dir
+/build/
+
+# ignore zig build files
+/.zig-cache/
+/zig-out/
+
+# Macos
+.DS_Store

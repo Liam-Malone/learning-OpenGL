@@ -1,0 +1,157 @@
+/* 3rd-party library includes */
+#define RGFWDEF
+#define RGFW_ALLOC_DROPFILES
+#define RGFW_IMPLEMENTATION
+#define RGFW_PRINT_ERRORS
+#include "external/RGFW.h"
+
+/* project file includes */
+/* [h] files */
+#include "my_types.h"
+#include "base/base_arena.h"
+
+/* [c] files */
+#include "base/base_arena.c"
+
+unsigned char running = 1;
+
+/* callbacks are another way you can handle events in RGFW */
+// void refreshCallback(RGFW_window* win) {
+//     drawLoop(win);
+// }
+
+int main(int argc, char** argv) {
+
+    /* print out program args */
+    if (argc > 0) {
+        for (int i=0; i<argc; i++) {
+            printf("  > Arg [%d]: %s\n", i, argv[i]);
+        }
+    }
+
+    RGFW_window* win = RGFW_createWindow("LearningGL", RGFW_RECT(500, 500, 500, 500), RGFW_ALLOW_DND | RGFW_CENTER);
+    RGFW_window_makeCurrent(win);
+    
+    // RGFW_setWindowRefreshCallback(refreshCallback);
+    // RGFW_createThread((RGFW_threadFunc_ptr)loop2, NULL); /* the function must be run after the window of this thread is made for some reason (using X11) */
+
+    unsigned char i;
+
+    #ifndef RGFW_VULKAN
+    glEnable(GL_BLEND);
+    glClearColor(0, 0, 0, 0);
+    #endif
+
+    // RGFW_window_setMouseStandard(win, RGFW_MOUSE_RESIZE_NESW);
+    
+    Color bg = { 
+        .r = 0.2f,
+        .g = 0.3f,
+        .b = 0.3f,
+        .a = 1.0f
+    };
+
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f,
+    };
+
+    bool increase_r = true;
+    u32 fps = 0;
+
+    while (running && !RGFW_isPressed(win, RGFW_q)) {   
+
+        /* Check for events, but don't stop rendering */
+        RGFW_window_eventWait(win, RGFW_NO_WAIT);
+
+        /* Input Handling */
+        {
+            while (RGFW_window_checkEvent(win) != NULL) {
+                if (win->event.type == RGFW_windowMoved) {
+                    /* printf("window moved\n"); */
+                }
+                else if (win->event.type == RGFW_windowResized) {
+                    /* printf("window resized\n"); */
+                    if ( (bg.r >= 1.0f) || (bg.r <= 0.0f) ) 
+                        increase_r = !increase_r;
+
+                    if (increase_r)
+                        bg.r += 0.01f;
+                    else
+                        bg.r -= 0.01f;
+                }
+
+                if (win->event.type == RGFW_quit) {
+                    running = 0;  
+                    break;
+                }
+                if (RGFW_isPressed(win, RGFW_Up)) {
+                    char* str = RGFW_readClipboard(NULL);
+                    printf("Pasted : %s\n", str);
+                    free(str);
+                }
+                else if (RGFW_isPressed(win, RGFW_Down))
+                    RGFW_writeClipboard("DOWN", 4);
+                else if (RGFW_isPressed(win, RGFW_Space))
+                    printf("fps : %i\n", fps);
+                else if (RGFW_isPressed(win, RGFW_w))
+                     RGFW_window_setMouseDefault(win);
+
+                if (win->event.type == RGFW_dnd) {
+                    for (i = 0; i < win->event.droppedFilesCount; i++)
+                        printf("dropped : %s\n", win->event.droppedFiles[i]);
+                }
+
+                else if (win->event.type == RGFW_jsButtonPressed)
+                    printf("pressed %i\n", win->event.button);
+
+                else if (win->event.type == RGFW_jsAxisMove && !win->event.button)
+                    printf("{%i, %i}\n", win->event.axis[0].x, win->event.axis[0].y);
+            }
+        }
+
+        /* Draw Loop */
+        {
+            RGFW_window_makeCurrent(win);
+
+            #ifndef RGFW_VULKAN
+            glClearColor(bg.r, bg.g, bg.b, bg.a);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+            
+            glBegin(GL_TRIANGLES);
+                // glColor3f(1, 0, 0); glVertex2f(-0.6, -0.75);
+                // glColor3f(0, 1, 0); glVertex2f(0.6, -0.75);
+                // glColor3f(0, 0, 1); glVertex2f(0, 0.75);
+            glEnd();
+            #endif
+            
+            RGFW_window_swapBuffers(win); /* NOTE(EimaMei): Rendering should always go: 1. Clear everything 2. Render 3. Swap buffers. Based on https://www.khronos.org/opengl/wiki/Common_Mistakes#Swap_Buffers */
+        }
+
+        /* Learn OpenGL Draw Loop */
+        // {
+        //     RGFW_window_makeCurrent(win);
+
+        //     /* clear background */
+        //     glClearColor(bg.r, bg.g, bg.b, bg.a);
+        //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+
+        //     unsigned int VBO;
+        //     glGenBuffers(1, &VBO);
+        //     
+        //     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        //     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+        //     RGFW_window_swapBuffers(win); /* NOTE(EimaMei): Rendering should always go: 1. Clear everything 2. Render 3. Swap buffers. Based on https://www.khronos.org/opengl/wiki/Common_Mistakes#Swap_Buffers */
+        // }
+
+        fps = RGFW_window_checkFPS(win, 60);
+    }
+
+    RGFW_window_close(win);
+    return 0;
+}
