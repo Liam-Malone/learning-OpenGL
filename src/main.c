@@ -1,8 +1,10 @@
 /* 3rd-party library includes */
+/* defines */
 #define RGFWDEF
 #define RGFW_ALLOC_DROPFILES
 #define RGFW_IMPLEMENTATION
 #define RGFW_PRINT_ERRORS
+/* [h] files */
 #include "external/RGFW.h"
 
 /* project file includes */
@@ -14,6 +16,7 @@
 #include "base/base_arena.c"
 
 unsigned char running = 1;
+
 
 /* callbacks are another way you can handle events in RGFW */
 // void refreshCallback(RGFW_window* win) {
@@ -121,33 +124,14 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
             
             glBegin(GL_TRIANGLES);
-                // glColor3f(1, 0, 0); glVertex2f(-0.6, -0.75);
-                // glColor3f(0, 1, 0); glVertex2f(0.6, -0.75);
-                // glColor3f(0, 0, 1); glVertex2f(0, 0.75);
+                glColor3f(1, 0, 0); glVertex2f(-0.6, -0.75);
+                glColor3f(0, 1, 0); glVertex2f(0.6, -0.75);
+                glColor3f(0, 0, 1); glVertex2f(0, 0.75);
             glEnd();
             #endif
             
             RGFW_window_swapBuffers(win); /* NOTE(EimaMei): Rendering should always go: 1. Clear everything 2. Render 3. Swap buffers. Based on https://www.khronos.org/opengl/wiki/Common_Mistakes#Swap_Buffers */
         }
-
-        /* Learn OpenGL Draw Loop */
-        // {
-        //     RGFW_window_makeCurrent(win);
-
-        //     /* clear background */
-        //     glClearColor(bg.r, bg.g, bg.b, bg.a);
-        //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-
-        //     unsigned int VBO;
-        //     glGenBuffers(1, &VBO);
-        //     
-        //     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        //     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-
-        //     RGFW_window_swapBuffers(win); /* NOTE(EimaMei): Rendering should always go: 1. Clear everything 2. Render 3. Swap buffers. Based on https://www.khronos.org/opengl/wiki/Common_Mistakes#Swap_Buffers */
-        // }
 
         fps = RGFW_window_checkFPS(win, 60);
     }

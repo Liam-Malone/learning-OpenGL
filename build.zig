@@ -10,12 +10,13 @@ pub fn build(b: *std.Build) !void {
     });
 
     const build_flags = [_][]const u8{
-        "-std=c99",
+        "-std=c2x",
         "-Wall",
         "-Wextra",
     };
 
     exe.defineCMacro("ZIG_CC", "1"); // Ensure that program knows it's compiled with `zig cc`
+
     exe.root_module.addCSourceFile(.{
         .file = b.path("src/main.c"),
         .flags = &build_flags,

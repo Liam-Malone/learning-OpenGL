@@ -1,6 +1,17 @@
 #define global static
 #define internal static
 
+#ifdef true 
+typedef enum {
+    false,
+    true,
+} bool;
+#endif
+
+#ifndef nullptr
+#define nullptr NULL
+#endif
+
 typedef struct Vec4 Vec4;
 struct Vec4 {
     float x;
