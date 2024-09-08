@@ -124,9 +124,17 @@ int main(int argc, char** argv) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
             
             glBegin(GL_TRIANGLES);
-                glColor3f(1, 0, 0); glVertex2f(-0.6, -0.75);
-                glColor3f(0, 1, 0); glVertex2f(0.6, -0.75);
-                glColor3f(0, 0, 1); glVertex2f(0, 0.75);
+
+            /* Darker, broader triangle to the right */
+                glColor4f(0.5, 0,   0,   1.0);   glVertex3f(-0.6, -0.75,  0.0);   // bottom left
+                glColor4f(0,   0.5, 0,   1.0);   glVertex3f(0.6,  -0.75,  0.0);   // bottom right
+                glColor4f(0,   0,   0.5, 1.0);   glVertex3f(0,     0.75,  0.0);   // top
+
+            /* Brighter, slimmer triangle to the left */
+                glColor4f(0,   0,   0.9, 1.0);   glVertex3f(0,     0.75,  0.0);  // top left
+                glColor4f(0.9, 0,   0,   1.0);   glVertex3f(-0.6, -0.75,  0.0);  // top right
+                glColor4f(0,   0.9, 0,   1.0);   glVertex3f(-0.6,  0.75,  0.0);  // bottom
+
             glEnd();
             #endif
             
