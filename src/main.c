@@ -136,9 +136,9 @@ int main(int argc, char** argv) {
                 glColor4f(0,   0.9, 0,   1.0);   glVertex3f(-0.6,  0.75,  0.0);  // bottom
 
             /* Brighter, slimmer triangle to the right */
-                glColor4f(0.9, 0,   0,   1.0);   glVertex3f(0.6,  -0.75,  0.0);  // top left
-                glColor4f(0,   0,   0.9, 1.0);   glVertex3f(0,     1.50,  0.0);  // top right
-                glColor4f(0,   0.9, 0,   1.0);   glVertex3f(-0.6,  0.75,  0.0);  // bottom
+                glColor4f(0.9, 0,   0,   1.0);   glVertex3f(0.6,   0.75,  0.0);  // top left
+                glColor4f(0,   0,   0.9, 1.0);   glVertex3f(0,     0.75,  0.0);  // top right
+                glColor4f(0,   0.9, 0,   1.0);   glVertex3f(0.6,   -0.75,  0.0);  // bottom
 
             glEnd();
             #endif
