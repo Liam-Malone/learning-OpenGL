@@ -71,18 +71,32 @@ int main(int argc, char** argv) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
-    static float vertices[] = {
+    static f32 vertices[] = {
         -0.5f, -0.5f, 0.0f,
          0.5f, -0.5f, 0.0f,
          0.0f,  0.5f, 0.0f
     };
 
-    unsigned int VBO;
+    u32 VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    Shader my_shader = Shader_load("shaders/glsl/vert.glsl" ,"shaders/glsl/frag.glsl");
+    u32 VAO;
+    glGenVertexArrays(1, &VAO);
+    // ..:: Initialization code (done once (unless your object frequently changes)) :: ..
+    // 1. bind Vertex Array Object
+    glBindVertexArray(VAO);
+
+    // 2. copy our vertices array in a buffer for OpenGL to use
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // 3. then set our vertex attributes pointers
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(f32), (void*) 0);
+    glEnableVertexAttribArray(0);
+
+    Shader my_shader = Shader_load("src/shaders/glsl/vert.glsl" ,"src/shaders/glsl/frag.glsl");
 
     static Color bg = { 0.1, 0.3, 0.3, 1.0 };
     /* window loop */
@@ -103,6 +117,15 @@ int main(int argc, char** argv) {
             clear_background(bg, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             /* next step: drawing a triangle */
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(f32), (void*) 0);
+            glEnableVertexAttribArray(0);
+
+            /* Drawing with VAO */
+            Shader_use(my_shader);
+            glBindVertexArray(VAO);
+
+            // 3. now draw the object
+            glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
         /* Swap front and back buffers */

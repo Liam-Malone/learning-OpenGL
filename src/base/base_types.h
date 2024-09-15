@@ -18,6 +18,10 @@ typedef int16_t  i16;
 typedef int32_t  i32;
 typedef int64_t  i64;
 
+/* float types */
+typedef float f32;
+typedef double f64;
+
 #define dyn_arr(T) struct { \
     T* arr;                 \
     u64 len;                \
@@ -82,5 +86,6 @@ typedef enum ShaderAttributeDataType {
 } ShaderAttributeDataType;
 
 global Shader Shader_load(const char* restrict vs_filepath, const char* restrict fs_filepath);
+global void Shader_use(Shader shader);
 global void Shader_unload(Shader* shader);
 global void Shader_set_value(Shader* shader, void* value, ShaderUniformDataType data_type);
