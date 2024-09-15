@@ -1,12 +1,5 @@
 #define global static
 
-#ifndef true 
-typedef enum {
-    false,
-    true,
-} bool;
-#endif
-
 #ifndef nullptr
 #define nullptr NULL
 #endif

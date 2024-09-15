@@ -57,12 +57,9 @@ if [[ $CC == 0 ]]; then
     fi
 fi
 
-if [ $CC == "clang" ]; then
-    compiler_specific_flags='-std=c23'
-elif [ $CC == "gcc" ]; then
-    compiler_specific_flags='-std=c2x'
-elif [ $CC == "zig cc" ]; then
-    compiler_specific_flags='-std=c23'
+if [[ $CC == "clang" ]]; then compiler_specific_flags='-std=c23';
+elif [[ $CC == "gcc" ]]; then compiler_specific_flags='-std=c2x';
+elif [[ $CC == "zig cc" ]]; then compiler_specific_flags='-std=c23';
 fi
 
 # gen_flags="$compiler_specific_flags -Wall -Wextra -lGL -lX11 -lXi -lpthread -ldl -D_GLFW_X11"
