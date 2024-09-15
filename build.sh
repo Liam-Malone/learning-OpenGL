@@ -11,6 +11,8 @@ next_is_compiler=0
 CC=0
 glfw=1
 main="src/main.c"
+next_is_log=0
+log_cmd=""
 
 # check args
 for var in "$@"; do
@@ -24,6 +26,8 @@ for var in "$@"; do
         next_is_compiler=1
     elif [ $var == "-o" ]; then
         next_is_out=1
+    elif [ $var == "-l" ]; then
+        next_is_log=1
     elif [ $var == "rgfw" ]; then
         glfw=0
         main="src/main-rgfw.c"
@@ -39,6 +43,11 @@ for var in "$@"; do
     if [[ $next_is_out == 1 ]]; then
         out=$var
         next_is_out=0
+    fi
+
+    if [[ $next_is_log == 1 ]]; then
+        log_cmd="2>$var"
+        next_is_log=0
     fi
 
     if [[ $add_args == 1 ]]; then
@@ -82,7 +91,7 @@ fi
 
 built=0
 
-$compile $main -o $out && built=1
+$compile $main -o $out $log && built=1
 
 if [[ $run == 1 ]] && [[ $built == 1 ]]; then
     $out $run_args

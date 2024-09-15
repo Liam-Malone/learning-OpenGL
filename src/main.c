@@ -11,11 +11,12 @@
 
 /* project file includes */
 /* [h] files */
-#include "my_types.h"
+#include "base/base_types.h"
 
 /* [c] files */
 #define _GLFW_X11 1
 #include "my_glfw.c"
+#include "base/base_types.c"
 
 #ifdef _debug
 /* debug mode defines */
@@ -27,13 +28,9 @@
 
 #endif
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void input_handle(GLFWwindow* window) {
-    if (glfwGetKey(window, PROGRAM_EXIT_KEY) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void input_handle(GLFWwindow* window);
+void clear_background(Color color, int clear_bits);
 
 int main(int argc, char** argv) {
 
@@ -73,12 +70,40 @@ int main(int argc, char** argv) {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+
+    static float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f
+    };
+
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    Shader my_shader = Shader_load("shaders/glsl/vert.glsl" ,"shaders/glsl/frag.glsl");
+
+    static Color bg = { 0.1, 0.3, 0.3, 1.0 };
     /* window loop */
     while (!glfwWindowShouldClose(window))
     {
-        input_handle(window);
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        /* Handle Inputs */
+        {
+            input_handle(window);
+        }
+
+        /* Update Program State */
+        {
+        }
+
+        /* Draw */
+        {
+            /* Clear background before drawing the rest */
+            clear_background(bg, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            /* next step: drawing a triangle */
+        }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -90,4 +115,18 @@ int main(int argc, char** argv) {
 cleanup_exit:
     glfwTerminate();
     return exit_code;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void input_handle(GLFWwindow* window) {
+    if (glfwGetKey(window, PROGRAM_EXIT_KEY) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+}
+
+void clear_background(Color color, int clear_bits) {
+        glClear(clear_bits);
+        glClearColor(color.r, color.g, color.b, color.a);
 }
