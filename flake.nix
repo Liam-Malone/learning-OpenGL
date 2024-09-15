@@ -19,10 +19,13 @@
             gcc
             gdb
             gf
-            glfw-wayland
+            glfw
+            gtk3
+            gtk4
             libGL
-            libxkbcommon
+            libdecor
             libpulseaudio
+            libxkbcommon
             mesa
             python3
             wayland

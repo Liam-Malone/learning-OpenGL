@@ -1,5 +1,4 @@
 #define global static
-#define internal static
 
 #ifdef true 
 typedef enum {

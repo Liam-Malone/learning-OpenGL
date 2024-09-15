@@ -9,6 +9,8 @@ run_args=
 add_args=0
 next_is_compiler=0
 CC=0
+glfw=0
+main="src/main.c"
 
 # check args
 for var in "$@"; do
@@ -22,6 +24,9 @@ for var in "$@"; do
         next_is_compiler=1
     elif [ $var == "-o" ]; then
         next_is_out=1
+    elif [ $var == "glfw" ]; then
+        glfw=1
+        main="src/glfw-main.c"
     elif [ $var == "--" ]; then
         add_args=1
     fi
@@ -45,7 +50,7 @@ compiler_specific_flags=''
 if [[ $CC == 0 ]]; then
     if command -v zig &> /dev/null; then
         CC='zig cc'
-        compiler_specific_flags='-std=c2x -DZIG_CC'
+        compiler_specific_flags='-std=c23 -DZIG_CC'
     elif command -v clang &> /dev/null; then
         CC=clang
         compiler_specific_flags='-std=c23'
@@ -64,8 +69,12 @@ else
 fi
 
 # gen_flags="$compiler_specific_flags -Wall -Wextra -lGL -lX11 -lXi -lpthread -ldl -D_GLFW_X11"
-gen_flags="$compiler_specific_flags -lGL -lX11 -lXi -lpthread -ldl -lm -lXrandr"
-debug_flags='-g -Ddebug'
+gen_flags="$compiler_specific_flags -lc -lGL -lX11 -lXi -lpthread -ldl -lm -lXrandr"
+if [[ $glfw == 1 ]]; then
+    gen_flags="$gen_flags -D_GLFW_X11 -lrt -D_GNU_SOURCE -DGL_SILENCE_DEPRECATION=199309L -fno-sanitize=undefined" # https://github.com/raysan5/raylib/issues/3674
+fi
+
+debug_flags='-g -D_debug'
 release_flags='-Drelease -O3'
 
 compile="$CC $gen_flags"
@@ -79,7 +88,7 @@ fi
 
 built=0
 
-$compile src/main.c -o $out && built=1
+$compile $main -o $out && built=1
 
 if [[ $run == 1 ]] && [[ $built == 1 ]]; then
     $out $run_args

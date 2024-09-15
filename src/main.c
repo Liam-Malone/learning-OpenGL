@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
             
             glBegin(GL_TRIANGLES);
 
-            /* Darker, broader triangle to the right */
+            /* Darker, broader triangle in the middle */
                 glColor4f(0.5, 0,   0,   1.0);   glVertex3f(-0.6, -0.75,  0.0);   // bottom left
                 glColor4f(0,   0.5, 0,   1.0);   glVertex3f(0.6,  -0.75,  0.0);   // bottom right
                 glColor4f(0,   0,   0.5, 1.0);   glVertex3f(0,     0.75,  0.0);   // top
@@ -143,7 +143,7 @@ int main(int argc, char** argv) {
             glEnd();
             #endif
             
-            RGFW_window_swapBuffers(win); /* NOTE(EimaMei): Rendering should always go: 1. Clear everything 2. Render 3. Swap buffers. Based on https://www.khronos.org/opengl/wiki/Common_Mistakes#Swap_Buffers */
+            RGFW_window_swapBuffers(win);
         }
 
         fps = RGFW_window_checkFPS(win, 60);
