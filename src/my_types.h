@@ -1,6 +1,6 @@
 #define global static
 
-#ifdef true 
+#ifndef true 
 typedef enum {
     false,
     true,

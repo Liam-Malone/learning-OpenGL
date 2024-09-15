@@ -1,30 +1,43 @@
-/* 3rd-party library includes */
-/* defines */
-#define RGFWDEF
-#define RGFW_ALLOC_DROPFILES
-#define RGFW_IMPLEMENTATION
-#define RGFW_PRINT_ERRORS
-/* [h] files */
-#include "external/RGFW.h"
+/* stdlib includes */
+#include <sys/time.h>    // Required for: timespec, nanosleep(), select() - POSIX
+#include <poll.h>        // Required for: ppoll() - POSIX
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+/* 3rd party library includes */
+#include "external/glad.h"
+#include "external/glad.c"
 
 /* project file includes */
 /* [h] files */
 #include "my_types.h"
-#include "base/base_arena.h"
 
 /* [c] files */
-#include "base/base_arena.c"
+#define _GLFW_X11 1
+#include "my_glfw.c"
 
-unsigned char running = 1;
+#ifdef _debug
+/* debug mode defines */
+#define PROGRAM_EXIT_KEY GLFW_KEY_Q
 
+#else
+/* release mode defines */
+#define PROGRAM_EXIT_KEY GLFW_KEY_NULL
 
-/* callbacks are another way you can handle events in RGFW */
-// void refreshCallback(RGFW_window* win) {
-//     drawLoop(win);
-// }
+#endif
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void input_handle(GLFWwindow* window) {
+    if (glfwGetKey(window, PROGRAM_EXIT_KEY) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+}
 
 int main(int argc, char** argv) {
 
+    int exit_code = 0;
     /* print out program args */
     if (argc > 0) {
         for (int i=0; i<argc; i++) {
@@ -32,123 +45,49 @@ int main(int argc, char** argv) {
         }
     }
 
-    RGFW_window* win = RGFW_createWindow("LearningGL", RGFW_RECT(500, 500, 500, 500), RGFW_ALLOW_DND | RGFW_CENTER);
-    RGFW_window_makeCurrent(win);
-    
-    // RGFW_setWindowRefreshCallback(refreshCallback);
-    // RGFW_createThread((RGFW_threadFunc_ptr)loop2, NULL); /* the function must be run after the window of this thread is made for some reason (using X11) */
-
-    unsigned char i;
-
-    #ifndef RGFW_VULKAN
-    glEnable(GL_BLEND);
-    glClearColor(0, 0, 0, 0);
-    #endif
-
-    // RGFW_window_setMouseStandard(win, RGFW_MOUSE_RESIZE_NESW);
-    
-    Color bg = { 
-        .r = 0.2f,
-        .g = 0.3f,
-        .b = 0.3f,
-        .a = 1.0f
-    };
-
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
-    };
-
-    bool increase_r = true;
-    u32 fps = 0;
-
-    while (running && !RGFW_isPressed(win, RGFW_q)) {   
-
-        /* Check for events, but don't stop rendering */
-        RGFW_window_eventWait(win, RGFW_NO_WAIT);
-
-        /* Input Handling */
-        {
-            while (RGFW_window_checkEvent(win) != NULL) {
-                if (win->event.type == RGFW_windowMoved) {
-                    /* printf("window moved\n"); */
-                }
-                else if (win->event.type == RGFW_windowResized) {
-                    /* printf("window resized\n"); */
-                    if ( (bg.r >= 1.0f) || (bg.r <= 0.0f) ) 
-                        increase_r = !increase_r;
-
-                    if (increase_r)
-                        bg.r += 0.01f;
-                    else
-                        bg.r -= 0.01f;
-                }
-
-                if (win->event.type == RGFW_quit) {
-                    running = 0;  
-                    break;
-                }
-                if (RGFW_isPressed(win, RGFW_Up)) {
-                    char* str = RGFW_readClipboard(NULL);
-                    printf("Pasted : %s\n", str);
-                    free(str);
-                }
-                else if (RGFW_isPressed(win, RGFW_Down))
-                    RGFW_writeClipboard("DOWN", 4);
-                else if (RGFW_isPressed(win, RGFW_Space))
-                    printf("fps : %i\n", fps);
-                else if (RGFW_isPressed(win, RGFW_w))
-                     RGFW_window_setMouseDefault(win);
-
-                if (win->event.type == RGFW_dnd) {
-                    for (i = 0; i < win->event.droppedFilesCount; i++)
-                        printf("dropped : %s\n", win->event.droppedFiles[i]);
-                }
-
-                else if (win->event.type == RGFW_jsButtonPressed)
-                    printf("pressed %i\n", win->event.button);
-
-                else if (win->event.type == RGFW_jsAxisMove && !win->event.button)
-                    printf("{%i, %i}\n", win->event.axis[0].x, win->event.axis[0].y);
-            }
-        }
-
-        /* Draw Loop */
-        {
-            RGFW_window_makeCurrent(win);
-
-            #ifndef RGFW_VULKAN
-            glClearColor(bg.r, bg.g, bg.b, bg.a);
-
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-            
-            glBegin(GL_TRIANGLES);
-
-            /* Darker, broader triangle in the middle */
-                glColor4f(0.5, 0,   0,   1.0);   glVertex3f(-0.6, -0.75,  0.0);   // bottom left
-                glColor4f(0,   0.5, 0,   1.0);   glVertex3f(0.6,  -0.75,  0.0);   // bottom right
-                glColor4f(0,   0,   0.5, 1.0);   glVertex3f(0,     0.75,  0.0);   // top
-
-            /* Brighter, slimmer triangle to the left */
-                glColor4f(0,   0,   0.9, 1.0);   glVertex3f(0,     0.75,  0.0);  // top left
-                glColor4f(0.9, 0,   0,   1.0);   glVertex3f(-0.6, -0.75,  0.0);  // top right
-                glColor4f(0,   0.9, 0,   1.0);   glVertex3f(-0.6,  0.75,  0.0);  // bottom
-
-            /* Brighter, slimmer triangle to the right */
-                glColor4f(0.9, 0,   0,   1.0);   glVertex3f(0.6,   0.75,  0.0);  // top left
-                glColor4f(0,   0,   0.9, 1.0);   glVertex3f(0,     0.75,  0.0);  // top right
-                glColor4f(0,   0.9, 0,   1.0);   glVertex3f(0.6,   -0.75,  0.0);  // bottom
-
-            glEnd();
-            #endif
-            
-            RGFW_window_swapBuffers(win);
-        }
-
-        fps = RGFW_window_checkFPS(win, 60);
+    int res = glfwInit();
+    if (res != true) {
+        printf(" :: glfw init failed: %d ::\n", res);
     }
 
-    RGFW_window_close(win);
-    return 0;
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); /* Setting version to 3.4 fails as 'invalid version' */
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
+    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+
+    if (!window) {
+        printf(" :: glfw window init failed ::\n");
+        exit_code = 1;
+        goto cleanup_exit;
+    }
+
+    glfwMakeContextCurrent(window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        printf("  :: GLAD init failed ::\n");
+        exit_code = 1;
+        goto cleanup_exit;
+    }
+    glViewport(0, 0, 800, 600);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    /* window loop */
+    while (!glfwWindowShouldClose(window))
+    {
+        input_handle(window);
+        /* Render here */
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        /* Swap front and back buffers */
+        glfwSwapBuffers(window);
+
+        /* Poll for and process events */
+        glfwPollEvents();
+    }
+
+cleanup_exit:
+    glfwTerminate();
+    return exit_code;
 }
