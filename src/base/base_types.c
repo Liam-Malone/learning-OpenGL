@@ -23,6 +23,7 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
     fp = fopen(vs_filepath, "rb");
     if (!fp) {
         shader = (Shader) {};
+
         fprintf(stderr, 
                 "  Failed to open file: %s\n",
                 vs_filepath);
@@ -123,7 +124,6 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
 
         glDeleteShader(vert_shader);
         glDeleteShader(frag_shader);
-
         vert_shader = frag_shader = 0;
 
         printf("  :: Shader Load Successful!! ::\n");
@@ -144,7 +144,6 @@ exit:
 
     if (frag_shader) 
         glDeleteShader(frag_shader);
-
 
     return shader;
 }
