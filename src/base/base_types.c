@@ -51,6 +51,8 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
                 fprintf(stderr, 
                         " :: ERR: Vertex Shader Compilation Failed ::\n  > %s\n\n", 
                         err_log);
+
+                goto exit;
             }
         }
 
@@ -91,6 +93,8 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
                 fprintf(stderr,
                         " :: ERR: Fragment Shader Compilation Failed ::\n  > %s\n\n", 
                         err_log);
+
+                goto exit;
             }
         }
 
