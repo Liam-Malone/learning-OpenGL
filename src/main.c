@@ -32,6 +32,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void input_handle(GLFWwindow* window);
 void clear_background(Color color, int clear_bits);
 
+int poly_draw_mode = GL_FILL;
+
 int main(int argc, char** argv) {
 
     int exit_code = 0;
@@ -54,6 +56,7 @@ int main(int argc, char** argv) {
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
 
+
     if (!window) {
         printf(" :: glfw window init failed ::\n");
         exit_code = 1;
@@ -67,38 +70,59 @@ int main(int argc, char** argv) {
         exit_code = 1;
         goto cleanup_exit;
     }
+
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-
-    static f32 vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
-    };
-
-    u32 VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    u32 VAO;
-    glGenVertexArrays(1, &VAO);
-    // ..:: Initialization code (done once (unless your object frequently changes)) :: ..
-    // 1. bind Vertex Array Object
-    glBindVertexArray(VAO);
-
-    // 2. copy our vertices array in a buffer for OpenGL to use
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // 3. then set our vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(f32), (void*) 0);
-    glEnableVertexAttribArray(0);
-
+    static Color bg = { 0.1, 0.3, 0.3, 1.0 };
     Shader my_shader = Shader_load("src/shaders/glsl/vert.glsl" ,"src/shaders/glsl/frag.glsl");
 
-    static Color bg = { 0.1, 0.3, 0.3, 1.0 };
+    /* Initial Triangle */
+    static f32 triangle_vertices[] = {
+        -0.5f, -0.5f, 0.0f,     /* Bottom Left */
+         0.5f, -0.5f, 0.0f,     /* Bottom Right */
+         0.0f,  0.5f, 0.0f     /* Top */
+    };
+
+    /* Rectangle */
+    static f32 vertices[] = {
+         0.5f,  0.5f, 0.0f, /* Top Right    */
+         0.5f, -0.5f, 0.0f, /* Bottom Right */
+        -0.5f, -0.5f, 0.0f, /* Bottom Left  */
+        -0.5f,  0.5f, 0.0f  /* Top Left     */
+    };
+
+    /* Indices for rectangle */
+    static u32 idx_buf[] = {
+        0, 1, 3,  /* Tri 1 */
+        1, 2, 3   /* Tri 2 */
+    };
+
+    u32 VBO, VAO, EBO;
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    /* Bind Vertex Array Object */
+    glBindVertexArray(VAO);
+
+    /* Copy Vertices into a Vertex Buffer for OpenGL */
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    /* Copy Indices into Element Buffer for OpenGL */
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx_buf), idx_buf, GL_STATIC_DRAW);
+
+    /* Set Vertex Attribute Pointers */
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (3 * sizeof(f32)), (void*) 0);
+    glEnableVertexAttribArray(0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+
     /* window loop */
     while (!glfwWindowShouldClose(window))
     {
@@ -116,26 +140,25 @@ int main(int argc, char** argv) {
             /* Clear background before drawing the rest */
             clear_background(bg, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            /* next step: drawing a triangle */
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(f32), (void*) 0);
-            glEnableVertexAttribArray(0);
-
-            /* Drawing with VAO */
+            /* Begin Shader Mode */
             Shader_use(my_shader);
-            glBindVertexArray(VAO);
 
-            // 3. now draw the object
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glBindVertexArray(VAO);
+            glPolygonMode(GL_FRONT_AND_BACK, poly_draw_mode);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
-
         /* Poll for and process events */
         glfwPollEvents();
     }
 
 cleanup_exit:
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+
     glfwTerminate();
     return exit_code;
 }
@@ -147,6 +170,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void input_handle(GLFWwindow* window) {
     if (glfwGetKey(window, PROGRAM_EXIT_KEY) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+        if (poly_draw_mode == GL_LINE) 
+            poly_draw_mode = GL_FILL;
+        else 
+            poly_draw_mode = GL_LINE;
+    }
 }
 
 void clear_background(Color color, int clear_bits) {

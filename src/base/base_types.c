@@ -39,7 +39,7 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
 
         /* Actually use the buffer to create vert shader */
         {
-            fprintf(stderr, "  > Vert Shader Code:\n%s\n\n", vsbuf);
+            fprintf(stderr, " :: Vert Shader Code ::\n%s\n", vsbuf);
 
             vert_shader = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vert_shader, 1, &vsbuf, NULL);
@@ -81,7 +81,7 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
 
         /* Actually use the buffer to create frag shader */
         {
-            fprintf(stderr, "  > Frag Shader Code:\n%s\n\n", fsbuf);
+            fprintf(stderr, " :: Frag Shader Code ::\n%s\n", fsbuf);
 
             frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(frag_shader, 1, &fsbuf, NULL);
@@ -126,7 +126,7 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
         glDeleteShader(frag_shader);
         vert_shader = frag_shader = 0;
 
-        printf("  :: Shader Load Successful!! ::\n");
+        printf("  :: Shader Load Successful!! ::\n\n");
     }
     
 exit: 
