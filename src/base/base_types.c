@@ -126,7 +126,7 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
         glDeleteShader(frag_shader);
         vert_shader = frag_shader = 0;
 
-        printf("  :: Shader Load Successful!! ::\n\n");
+        printf("  :: Shader Load Successful!! ::\n");
     }
     
 exit: 
@@ -146,6 +146,17 @@ exit:
         glDeleteShader(frag_shader);
 
     return shader;
+}
+
+global i32 Shader_get_uniform_location(Shader shader, const char* restrict value) {
+    return glGetUniformLocation(shader.id, value);
+}
+
+global void Shader_set_value(Shader shader, void* value, ShaderUniformDataType data_type) {
+}
+
+global void Shader_unload(Shader shader) {
+    glDeleteProgram(shader.id);
 }
 
 global void Shader_use(Shader shader) {

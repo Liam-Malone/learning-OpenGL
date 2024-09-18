@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
 /* 3rd party library includes */
 #include "external/glad.h"
@@ -122,7 +123,9 @@ int main(int argc, char** argv) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-
+    f32 time = 0;
+    Color rect_col = { .r = 0, .g = 0, .b = 0, .a = 1.0 };
+    i32 vertexColorLocation = Shader_get_uniform_location(my_shader, "progCol");
     /* window loop */
     while (!glfwWindowShouldClose(window))
     {
@@ -133,6 +136,10 @@ int main(int argc, char** argv) {
 
         /* Update Program State */
         {
+            time = glfwGetTime();
+            rect_col.r = (cos(time) / 2.0f) + 0.5f;
+            rect_col.g = (sin(time) / 2.0f) + 0.5f;
+            rect_col.b = (cos(time) / 2.0f) + 0.5f;
         }
 
         /* Draw */
@@ -142,6 +149,7 @@ int main(int argc, char** argv) {
 
             /* Begin Shader Mode */
             Shader_use(my_shader);
+            glUniform4f(vertexColorLocation, rect_col.r, rect_col.g, rect_col.b, 1.0f);
 
             glBindVertexArray(VAO);
             glPolygonMode(GL_FRONT_AND_BACK, poly_draw_mode);
@@ -158,6 +166,7 @@ cleanup_exit:
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+    Shader_unload(my_shader);
 
     glfwTerminate();
     return exit_code;
