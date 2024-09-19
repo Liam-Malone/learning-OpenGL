@@ -35,6 +35,7 @@
             xorg.libXinerama
             xorg.libXcursor
             xorg.libXrandr
+            xorg.libxcb
             xorg.xinput
             zig
           ];
