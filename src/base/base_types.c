@@ -152,7 +152,60 @@ global i32 Shader_get_uniform_location(Shader shader, const char* restrict value
     return glGetUniformLocation(shader.id, value);
 }
 
-global void Shader_set_value(Shader shader, void* value, ShaderUniformDataType data_type) {
+global void Shader_set_value(Shader shader, i32 location, void* value, ShaderUniformDataType data_type) {
+    switch (data_type) {
+        case shader_uniform_f32:     { 
+                                         glUniform1f(location, *((f32*) value));
+                                         break;
+                                     }
+        case shader_uniform_vec2f32:  { 
+                                         glUniform2f(location, 
+                                                 ((Vec2f32*)value)->x, 
+                                                 ((Vec2f32*)value)->y);
+                                         break;
+                                     }
+        case shader_uniform_vec3f32:  { 
+                                         glUniform3f(location, 
+                                                 ((Vec3f32*)value)->x, 
+                                                 ((Vec3f32*)value)->y, 
+                                                 ((Vec3f32*)value)->z); 
+                                         break; 
+                                     }
+        case shader_uniform_vec4f32:  { 
+                                         glUniform4f(location,
+                                                 ((Vec4f32*)value)->x, 
+                                                 ((Vec4f32*)value)->y, 
+                                                 ((Vec4f32*)value)->z, 
+                                                 ((Vec4f32*)value)->w); 
+                                         break;
+                                     }
+        case shader_uniform_i32:     { 
+                                         glUniform1i(location, *((i32*) value));
+                                         break;
+                                     }
+        case shader_uniform_vec2i32: { 
+                                         glUniform2i(location,
+                                                 ((Vec2i32*)value)->x, 
+                                                 ((Vec2i32*)value)->y);
+                                         break;
+                                     }
+        case shader_uniform_vec3i32: { 
+                                         glUniform3i(location,
+                                                 ((Vec3i32*)value)->x, 
+                                                 ((Vec3i32*)value)->y,
+                                                 ((Vec3i32*)value)->z);
+                                         break;
+                                     }
+        case shader_uniform_vec4i32: { 
+                                         glUniform4i(location,
+                                                 ((Vec4i32*)value)->x, 
+                                                 ((Vec4i32*)value)->y,
+                                                 ((Vec4i32*)value)->z,
+                                                 ((Vec4i32*)value)->w);
+                                         break; 
+                                     }
+        case shader_uniform_sampler2d: { assert(false) ; break;} /* not gonna handle this yet */
+    }
 }
 
 global void Shader_unload(Shader shader) {

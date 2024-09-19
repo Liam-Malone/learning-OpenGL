@@ -9,6 +9,7 @@
 /* 3rd party library includes */
 #include "external/glad.h"
 #include "external/glad.c"
+#define STB_IMAGE_IMPLEMENTATION
 
 /* project file includes */
 /* [h] files */
@@ -16,7 +17,7 @@
 
 /* [c] files */
 #define _GLFW_X11 1
-#include "my_glfw.c"
+#include "my_glfw.c" /* Single Translation Unit Build */
 #include "base/base_types.c"
 
 #ifdef _debug
@@ -75,35 +76,33 @@ int main(int argc, char** argv) {
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    static Color bg = { 0.1, 0.3, 0.3, 1.0 };
-    Shader my_shader = Shader_load("src/shaders/glsl/vert.glsl" ,"src/shaders/glsl/frag.glsl");
-
     /* Initial Triangle */
-    static f32 triangle_vertices[] = {
-        -0.5f, -0.5f, 0.0f,     /* Bottom Left */
-         0.5f, -0.5f, 0.0f,     /* Bottom Right */
-         0.0f,  0.5f, 0.0f     /* Top */
-    };
-
-    /* Rectangle */
     static f32 vertices[] = {
-         0.5f,  0.5f, 0.0f, /* Top Right    */
-         0.5f, -0.5f, 0.0f, /* Bottom Right */
-        -0.5f, -0.5f, 0.0f, /* Bottom Left  */
-        -0.5f,  0.5f, 0.0f  /* Top Left     */
+         /* X,  Y,    Z */    /* R, G,    B */
+         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,    /* Bottom Right */
+        -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,    /* Bottom Left */
+         0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f     /* Top */
     };
 
-    /* Indices for rectangle */
-    static u32 idx_buf[] = {
-        0, 1, 3,  /* Tri 1 */
-        1, 2, 3   /* Tri 2 */
-    };
+    // /* Rectangle */
+    // static f32 rectangle_vertices[] = {
+    //      0.5f,  0.5f, 0.0f, /* Top Right    */
+    //      0.5f, -0.5f, 0.0f, /* Bottom Right */
+    //     -0.5f, -0.5f, 0.0f, /* Bottom Left  */
+    //     -0.5f,  0.5f, 0.0f  /* Top Left     */
+    // };
+
+    // /* Indices for rectangle */
+    // static u32 idx_buf[] = {
+    //     0, 1, 3,  /* Tri 1 */
+    //     1, 2, 3   /* Tri 2 */
+    // };
 
     u32 VBO, VAO, EBO;
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    // glGenBuffers(1, &EBO);
 
     /* Bind Vertex Array Object */
     glBindVertexArray(VAO);
@@ -113,19 +112,28 @@ int main(int argc, char** argv) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     /* Copy Indices into Element Buffer for OpenGL */
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx_buf), idx_buf, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx_buf), idx_buf, GL_STATIC_DRAW);
 
     /* Set Vertex Attribute Pointers */
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (3 * sizeof(f32)), (void*) 0);
+    /* Position Attribute */
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(f32)), (void*) 0);
     glEnableVertexAttribArray(0);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+
+    /* Color Attribute */
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(f32)), (void*) (3 * sizeof(f32)));
+    glEnableVertexAttribArray(1);
+
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindVertexArray(0);
+
+    static Color bg = { 0.1, 0.3, 0.3, 1.0 };
+    Shader my_shader = Shader_load("src/shaders/glsl/vert.glsl" ,"src/shaders/glsl/frag.glsl");
 
     f32 time = 0;
     Color rect_col = { .r = 0, .g = 0, .b = 0, .a = 1.0 };
     i32 vertexColorLocation = Shader_get_uniform_location(my_shader, "progCol");
+
     /* window loop */
     while (!glfwWindowShouldClose(window))
     {
@@ -149,11 +157,13 @@ int main(int argc, char** argv) {
 
             /* Begin Shader Mode */
             Shader_use(my_shader);
-            glUniform4f(vertexColorLocation, rect_col.r, rect_col.g, rect_col.b, 1.0f);
+            /* glUniform4f(vertexColorLocation, rect_col.r, rect_col.g, rect_col.b, 1.0f); */
+            Shader_set_value(my_shader, vertexColorLocation, (void*) &rect_col, shader_uniform_vec4f32);
 
             glBindVertexArray(VAO);
             glPolygonMode(GL_FRONT_AND_BACK, poly_draw_mode);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
         /* Swap front and back buffers */
