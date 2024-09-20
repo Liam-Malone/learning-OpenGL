@@ -42,9 +42,6 @@
 
           shellHook = ''
             alias build='./build.sh'
-            alias test='./test.sh'
-            alias serve='python3 -m http.server 8080'
-            alias gl_site='cd learnopengl.com; serve &>/dev/null &disown; cd -'
             export CC='zig cc'
           '';
         };
