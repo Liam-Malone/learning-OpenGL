@@ -10,6 +10,8 @@
 #include "external/glad.h"
 #include "external/glad.c"
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC /* Ensure Static for Single Translation Unit */
+#include "external/stb_image.h" /* STB library for Image Loading */
 
 /* project file includes */
 /* [h] files */
@@ -36,25 +38,22 @@ void clear_background(Color color, int clear_bits);
 
 int poly_draw_mode = GL_FILL;
 
-int main(int argc, char** argv) {
-
+int main(void) {
     int exit_code = 0;
-    /* print out program args */
-    if (argc > 0) {
-        for (int i=0; i<argc; i++) {
-            printf("  > Arg [%d]: %s\n", i, argv[i]);
-        }
-    }
 
     int res = glfwInit();
-    if (res != true) {
+    if (res != GLFW_TRUE) {
         printf(" :: glfw init failed: %d ::\n", res);
+        exit_code = 1;
+        goto cleanup_exit;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); /* Setting version to 3.4 fails as 'invalid version' */
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    /* glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); */
+    #ifdef __apple__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
 
@@ -84,51 +83,95 @@ int main(int argc, char** argv) {
          0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f     /* Top */
     };
 
-    // /* Rectangle */
-    // static f32 rectangle_vertices[] = {
-    //      0.5f,  0.5f, 0.0f, /* Top Right    */
-    //      0.5f, -0.5f, 0.0f, /* Bottom Right */
-    //     -0.5f, -0.5f, 0.0f, /* Bottom Left  */
-    //     -0.5f,  0.5f, 0.0f  /* Top Left     */
-    // };
+    /* Rectangle */
+    static f32 rectangle_vertices[] = {
+         0.5f,  0.5f, 0.0f, /* Top Right    */
+         0.5f, -0.5f, 0.0f, /* Bottom Right */
+        -0.5f, -0.5f, 0.0f, /* Bottom Left  */
+        -0.5f,  0.5f, 0.0f  /* Top Left     */
+    };
 
-    // /* Indices for rectangle */
-    // static u32 idx_buf[] = {
-    //     0, 1, 3,  /* Tri 1 */
-    //     1, 2, 3   /* Tri 2 */
-    // };
+    /* Indices for rectangle */
+    static u32 idx_buf[] = {
+        0, 1, 3,  /* Tri 1 */
+        1, 2, 3   /* Tri 2 */
+    };
+    static f32 tex_vertices[] = {
+        /* positions */      /* colors  */        /* texture coords */
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, /* Top Right    */
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right */
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left  */
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left     */
+    };
 
-    u32 VBO, VAO, EBO;
+    u32 VBO = 0; 
+    u32 VAO = 0; 
+    u32 EBO = 0;
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    // glGenBuffers(1, &EBO);
+    /* Preparing buffers */
+    { 
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
 
-    /* Bind Vertex Array Object */
-    glBindVertexArray(VAO);
+        /* Bind Vertex Array Object */
+        glBindVertexArray(VAO);
 
-    /* Copy Vertices into a Vertex Buffer for OpenGL */
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        /* Copy Vertices into a Vertex Buffer for OpenGL */
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(tex_vertices), tex_vertices, GL_STATIC_DRAW);
 
-    /* Copy Indices into Element Buffer for OpenGL */
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx_buf), idx_buf, GL_STATIC_DRAW);
+        /* Copy Indices into Element Buffer for OpenGL */
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx_buf), idx_buf, GL_STATIC_DRAW);
 
-    /* Set Vertex Attribute Pointers */
-    /* Position Attribute */
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(f32)), (void*) 0);
-    glEnableVertexAttribArray(0);
+        /* Set Vertex Attribute Pointers */
+        /* Position Attribute */
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (8 * sizeof(f32)), (void*) 0);
+        glEnableVertexAttribArray(0);
 
-    /* Color Attribute */
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(f32)), (void*) (3 * sizeof(f32)));
-    glEnableVertexAttribArray(1);
+        /* Color Attribute */
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (8 * sizeof(f32)), (void*) (3 * sizeof(f32)));
+        glEnableVertexAttribArray(1);
 
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
+        /* Textures */
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(f32), (void*)(6 * sizeof(f32)));
+        glEnableVertexAttribArray(2);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
 
     static Color bg = { 0.1, 0.3, 0.3, 1.0 };
     Shader my_shader = Shader_load("src/shaders/glsl/vert.glsl" ,"src/shaders/glsl/frag.glsl");
+
+
+
+    i32 width, height, channel_count;
+    const char* asset_path = "assets/PNG/Default/pattern_20.png";
+    u8* img_data = stbi_load(asset_path, &width, &height, &channel_count, 0);
+    u32 texture;
+    /* Prepare Image */
+    if (img_data)
+    {
+        /* Create Texture */
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        /* set the texture wrapping/filtering options (on currently bound texture) */
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        /* Assign image to texture */
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        /* Image memory is no longer needed */
+        stbi_image_free(img_data); img_data = nullptr;
+    } else { fprintf(stderr, "  :: Failed to load image: %s ::\n", asset_path); goto cleanup_exit; }
+
 
     f32 time = 0;
     Color rect_col = { .r = 0, .g = 0, .b = 0, .a = 1.0 };
@@ -155,15 +198,17 @@ int main(int argc, char** argv) {
             /* Clear background before drawing the rest */
             clear_background(bg, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            glBindTexture(GL_TEXTURE_2D, texture);
+
             /* Begin Shader Mode */
             Shader_use(my_shader);
             /* glUniform4f(vertexColorLocation, rect_col.r, rect_col.g, rect_col.b, 1.0f); */
             Shader_set_value(my_shader, vertexColorLocation, (void*) &rect_col, shader_uniform_vec4f32);
 
             glBindVertexArray(VAO);
-            glPolygonMode(GL_FRONT_AND_BACK, poly_draw_mode);
-            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            // glPolygonMode(GL_FRONT_AND_BACK, poly_draw_mode);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            // glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
         /* Swap front and back buffers */
@@ -173,10 +218,14 @@ int main(int argc, char** argv) {
     }
 
 cleanup_exit:
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+
+    if (VAO) glDeleteVertexArrays(1, &VAO);
+    if (VBO) glDeleteBuffers(1, &VBO);
+    if (EBO) glDeleteBuffers(1, &EBO);
+
     Shader_unload(my_shader);
+
+    if (img_data) stbi_image_free(img_data);
 
     glfwTerminate();
     return exit_code;
