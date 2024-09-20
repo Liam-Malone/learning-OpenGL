@@ -14,13 +14,10 @@
 #include "external/stb_image.h" /* STB library for Image Loading */
 
 /* project file includes */
-/* [h] files */
-#include "base/base_types.h"
-
 /* [c] files */
 #define _GLFW_X11 1
 #include "my_glfw.c" /* Single Translation Unit Build */
-#include "base/base_types.c"
+#include "base/base.c"
 
 #ifdef _debug
 /* debug mode defines */
@@ -146,16 +143,27 @@ int main(void) {
     Shader my_shader = Shader_load("src/shaders/glsl/vert.glsl" ,"src/shaders/glsl/frag.glsl");
 
 
+    // const char* asset1_path = "assets/PNG/Double/pattern_18.png";
+    // const char* asset2_path = "assets/PNG/Double/pattern_49.png";
+
+    const char* assets[2] = {
+            "assets/PNG/Double/pattern_18.png",
+            "assets/PNG/Double/pattern_49.png"
+    };
+
+    slice(const char*) _assets = slice_range(assets, 0, 2);
 
     i32 width, height, channel_count;
-    const char* asset_path = "assets/PNG/Default/pattern_20.png";
-    u8* img_data = stbi_load(asset_path, &width, &height, &channel_count, 0);
+    u8* img_data = 0;
     u32 texture;
-    /* Prepare Image */
-    if (img_data)
-    {
+
+    /* Prepare Image 1 */
+    img_data = stbi_load(slice_get(_assets, 0), &width, &height, &channel_count, 0);
+    if (img_data) {
         /* Create Texture */
         glGenTextures(1, &texture);
+        glActiveTexture(GL_TEXTURE0);
+
         glBindTexture(GL_TEXTURE_2D, texture);
 
         /* set the texture wrapping/filtering options (on currently bound texture) */
@@ -170,12 +178,41 @@ int main(void) {
 
         /* Image memory is no longer needed */
         stbi_image_free(img_data); img_data = nullptr;
-    } else { fprintf(stderr, "  :: Failed to load image: %s ::\n", asset_path); goto cleanup_exit; }
+        width = height = channel_count = 0;
+    } else { fprintf(stderr, "  :: Failed to load image: %s ::\n", slice_get(_assets, 0)); goto cleanup_exit; }
 
+    /* Prepare Image 2 */
+    u32 texture_2;
+    img_data = stbi_load(slice_get(_assets, 1), &width, &height, &channel_count, 0);
+    if (img_data) {
+        /* Create Texture */
+        glGenTextures(1, &texture_2);
+        glActiveTexture(GL_TEXTURE1);
+
+        glBindTexture(GL_TEXTURE_2D, texture_2);
+
+        /* set the texture wrapping/filtering options (on currently bound texture) */
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        /* Assign image to texture */
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img_data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        /* Image memory is no longer needed */
+        stbi_image_free(img_data); img_data = nullptr;
+        width = height = channel_count = 0;
+    } else { fprintf(stderr, "  :: Failed to load image: %s ::\n", slice_get(_assets, 1)); goto cleanup_exit; }
 
     f32 time = 0;
     Color rect_col = { .r = 0, .g = 0, .b = 0, .a = 1.0 };
     i32 vertexColorLocation = Shader_get_uniform_location(my_shader, "progCol");
+    i32 tex_locs[2] = { 
+        Shader_get_uniform_location(my_shader, "tex1"),
+        Shader_get_uniform_location(my_shader, "tex2"),
+    };
 
     /* window loop */
     while (!glfwWindowShouldClose(window))
@@ -198,12 +235,19 @@ int main(void) {
             /* Clear background before drawing the rest */
             clear_background(bg, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glBindTexture(GL_TEXTURE_2D, texture);
+            // glBindTexture(GL_TEXTURE_2D, texture);
 
             /* Begin Shader Mode */
             Shader_use(my_shader);
             /* glUniform4f(vertexColorLocation, rect_col.r, rect_col.g, rect_col.b, 1.0f); */
-            Shader_set_value(my_shader, vertexColorLocation, (void*) &rect_col, shader_uniform_vec4f32);
+            // Shader_set_value(my_shader, vertexColorLocation, (void*) &rect_col, shader_uniform_vec4f32);
+            int ints[] = { 0, 1 };
+            Shader_set_value(my_shader, tex_locs[0], (void*) &ints[0], shader_uniform_i32);
+            Shader_set_value(my_shader, tex_locs[1], (void*) &ints[1], shader_uniform_i32);
+
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, texture_2);
 
             glBindVertexArray(VAO);
             // glPolygonMode(GL_FRONT_AND_BACK, poly_draw_mode);
