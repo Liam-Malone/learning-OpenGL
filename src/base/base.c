@@ -2,8 +2,10 @@
 
 /* [h] files */
 #include "base_types.h"
+#include "base_math.h"
 #include "base_gfx.h"
 
 /* [c] files */
 #include "base_types.c"
+#include "base_math.c"
 #include "base_gfx.c"

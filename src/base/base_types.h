@@ -1,5 +1,13 @@
 #include <stdint.h>
 
+#ifdef _debug 
+#define TODO 
+#else
+#define TODO static_assert(false, "DO NOT COMPILE A RELEASE BUILD WITHOUT RESOLVING TODOs")
+#endif
+
+#define auto static_assert(false, "No `auto` in the codebase!!");
+
 #ifndef nullptr
 #define nullptr NULL
 #endif
@@ -33,48 +41,6 @@ typedef double f64;
     u64 cap;                \
 } 
 
-typedef struct Vec4f32 Vec4f32;
-struct Vec4f32 {
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
-};
-
-typedef struct Vec3f32 Vec3f32;
-struct Vec3f32 {
-    f32 x;
-    f32 y;
-    f32 z;
-};
-
-typedef struct Vec2f32 Vec2f32;
-struct Vec2f32 {
-    f32 x;
-    f32 y;
-};
-
-typedef struct Vec4i32 Vec4i32;
-struct Vec4i32 {
-    i32 x;
-    i32 y;
-    i32 z;
-    i32 w;
-};
-
-typedef struct Vec3i32 Vec3i32;
-struct Vec3i32 {
-    i32 x;
-    i32 y;
-    i32 z;
-};
-
-typedef struct Vec2i32 Vec2i32;
-struct Vec2i32 {
-    i32 x;
-    i32 y;
-};
-
 typedef struct Color Color;
 struct Color {
     f32 r;
@@ -82,6 +48,3 @@ struct Color {
     f32 b;
     f32 a;
 };
-
-typedef Vec2f32 Velocity;
-typedef Vec3f32 Position;
