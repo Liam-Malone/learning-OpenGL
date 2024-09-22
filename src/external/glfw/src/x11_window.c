@@ -62,7 +62,7 @@
 //
 static GLFWbool waitForX11Event(double* timeout)
 {
-    struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
+    struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN, 0 };
 
     while (!XPending(_glfw.x11.display))
     {
@@ -82,9 +82,9 @@ static GLFWbool waitForAnyEvent(double* timeout)
     enum { XLIB_FD, PIPE_FD, INOTIFY_FD };
     struct pollfd fds[] =
     {
-        [XLIB_FD] = { ConnectionNumber(_glfw.x11.display), POLLIN },
-        [PIPE_FD] = { _glfw.x11.emptyEventPipe[0], POLLIN },
-        [INOTIFY_FD] = { -1, POLLIN }
+        [XLIB_FD] = { ConnectionNumber(_glfw.x11.display), POLLIN, 0 },
+        [PIPE_FD] = { _glfw.x11.emptyEventPipe[0], POLLIN, 0 },
+        [INOTIFY_FD] = { -1, POLLIN, 0 }
     };
 
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)
@@ -97,7 +97,7 @@ static GLFWbool waitForAnyEvent(double* timeout)
         if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
             return GLFW_FALSE;
 
-        for (int i = 1; i < sizeof(fds) / sizeof(fds[0]); i++)
+        for (unsigned int i = 1; i < sizeof(fds) / sizeof(fds[0]); i++)
         {
             if (fds[i].revents & POLLIN)
                 return GLFW_TRUE;
@@ -578,7 +578,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     int xpos = 0, ypos = 0;
 
-    if (wndconfig->xpos != GLFW_ANY_POSITION && wndconfig->ypos != GLFW_ANY_POSITION)
+    if (wndconfig->xpos != (int) GLFW_ANY_POSITION && wndconfig->ypos != (int) GLFW_ANY_POSITION)
     {
         xpos = wndconfig->xpos;
         ypos = wndconfig->ypos;
@@ -725,7 +725,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
         // HACK: Explicitly setting PPosition to any value causes some WMs, notably
         //       Compiz and Metacity, to honor the position of unmapped windows
-        if (wndconfig->xpos != GLFW_ANY_POSITION && wndconfig->ypos != GLFW_ANY_POSITION)
+        if (wndconfig->xpos != (int) GLFW_ANY_POSITION && wndconfig->ypos != (int) GLFW_ANY_POSITION)
         {
             hints->flags |= PPosition;
             hints->x = 0;
@@ -1330,7 +1330,7 @@ static void processEvent(XEvent *event)
 
                     if (next.type == KeyPress &&
                         next.xkey.window == event->xkey.window &&
-                        next.xkey.keycode == keycode)
+                        next.xkey.keycode == (unsigned int) keycode)
                     {
                         // HACK: The time of repeat events sometimes doesn't
                         //       match that of the press event, so add an
