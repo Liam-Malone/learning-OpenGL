@@ -41,7 +41,7 @@ int main(void) {
     if (res != GLFW_TRUE) {
         printf(" :: glfw init failed: %d ::\n", res);
         exit_code = 1;
-        goto cleanup_exit;
+        goto glfw_cleanup_exit;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -56,7 +56,7 @@ int main(void) {
     if (!window) {
         printf(" :: glfw window init failed ::\n");
         exit_code = 1;
-        goto cleanup_exit;
+        goto glfw_cleanup_exit;
     }
 
     glfwMakeContextCurrent(window);
@@ -64,27 +64,27 @@ int main(void) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         printf("  :: GLAD init failed ::\n");
         exit_code = 1;
-        goto cleanup_exit;
+        goto glfw_cleanup_exit;
     }
 
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     /* Initial Triangle */
-    static f32 vertices[] = {
-         /* X,  Y,    Z */    /* R, G,    B */
-         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,    /* Bottom Right */
-        -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,    /* Bottom Left */
-         0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f     /* Top */
-    };
+    // static f32 vertices[] = {
+    //      /* X,  Y,    Z */    /* R, G,    B */
+    //      0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,    /* Bottom Right */
+    //     -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,    /* Bottom Left */
+    //      0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f     /* Top */
+    // };
 
     /* Rectangle */
-    static f32 rectangle_vertices[] = {
-         0.5f,  0.5f, 0.0f, /* Top Right    */
-         0.5f, -0.5f, 0.0f, /* Bottom Right */
-        -0.5f, -0.5f, 0.0f, /* Bottom Left  */
-        -0.5f,  0.5f, 0.0f  /* Top Left     */
-    };
+    // static f32 rectangle_vertices[] = {
+    //      0.5f,  0.5f, 0.0f, /* Top Right    */
+    //      0.5f, -0.5f, 0.0f, /* Bottom Right */
+    //     -0.5f, -0.5f, 0.0f, /* Bottom Left  */
+    //     -0.5f,  0.5f, 0.0f  /* Top Left     */
+    // };
 
     /* Indices for rectangle */
     static u32 idx_buf[] = {
@@ -206,7 +206,7 @@ int main(void) {
 
     f32 time = 0;
     Color rect_col = { .r = 0, .g = 0, .b = 0, .a = 1.0 };
-    i32 vertexColorLocation = Shader_get_uniform_location(my_shader, "progCol");
+    /* i32 vertexColorLocation = Shader_get_uniform_location(my_shader, "progCol"); */
     i32 tex_locs[2] = { 
         Shader_get_uniform_location(my_shader, "tex1"),
         Shader_get_uniform_location(my_shader, "tex2"),
@@ -268,6 +268,8 @@ cleanup_exit:
     Shader_unload(my_shader);
 
     if (img_data) stbi_image_free(img_data);
+
+glfw_cleanup_exit:
 
     glfwTerminate();
     return exit_code;
