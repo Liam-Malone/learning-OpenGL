@@ -71,13 +71,16 @@ elif [[ $CC == "gcc" ]]; then compiler_specific_flags='-std=c2x';
 elif [[ $CC == "zig cc" ]]; then compiler_specific_flags='-std=c23';
 fi
 
-# gen_flags="$compiler_specific_flags -Wall -Wextra -lGL -lX11 -lXi -lpthread -ldl -D_GLFW_X11"
-gen_flags="$compiler_specific_flags -Wall -Wextra -pedantic -lc -lGL -lX11 -lXi -lpthread -ldl -lm -lXrandr"
+gen_flags="$compiler_specific_flags \
+    -pedantic \
+    -Wall -Wextra \
+    -lc -lGL -lX11 -lXi -lpthread -ldl -lm -lXrandr \
+    -Wno-keyword-macro -Wno-unused-function -Wno-unused-parameter"
 if [[ $glfw == 1 ]]; then
     gen_flags="$gen_flags -lrt -D_GLFW_X11 -D_GNU_SOURCE -DGL_SILENCE_DEPRECATION=199309L -fno-sanitize=undefined" # https://github.com/raysan5/raylib/issues/3674
 fi
 
-debug_flags='-g -D_debug'
+debug_flags="-g -D_debug -Wno-incompatible-pointer-types-discards-qualifiers"
 release_flags='-D_release -O3'
 
 compile="$CC $gen_flags"
