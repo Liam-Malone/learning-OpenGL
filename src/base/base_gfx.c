@@ -1,3 +1,15 @@
+/* Begin Color Functions */
+global Color Color_HSV_to_RGBA(ColorHSV hsv_color) {
+    TODO;
+    Color col = {};
+    return col;
+}
+global ColorHSV Color_RGBA_to_HSV(Color color) {
+    TODO;
+    ColorHSV col = {};
+    return col;
+}
+
 /* Begin Shader Functions */
 global Shader Shader_load(const char* restrict vs_filepath, const char* restrict fs_filepath) {
     printf(" :: Shader Loading ::\n   > Attempting to load:\n    vs: %s\n    fs: %s\n\n",

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <math.h>
 
 /* 3rd party library includes */
 #include "external/glad.h"
@@ -25,7 +24,7 @@
 
 #else
 /* release mode defines */
-#define PROGRAM_EXIT_KEY GLFW_KEY_NULL
+#define PROGRAM_EXIT_KEY GLFW_KEY_UNKNOWN
 
 #endif
 
@@ -53,7 +52,6 @@ int main(void) {
     #endif
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-
 
     if (!window) {
         printf(" :: glfw window init failed ::\n");

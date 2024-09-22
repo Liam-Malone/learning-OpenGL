@@ -1,3 +1,25 @@
+/* Color Types */
+/* RGBA */
+typedef struct Color Color;
+struct Color {
+    f32 r;
+    f32 g;
+    f32 b;
+    f32 a;
+};
+
+/* HSV */
+typedef struct ColorHSV ColorHSV;
+struct ColorHSV {
+    f32 h;
+    f32 s;
+    f32 v;
+};
+
+/* Color Type Functions */
+global Color Color_HSV_to_RGBA(ColorHSV hsv_color);
+global ColorHSV Color_RGBA_to_HSV(Color color);
+
 /* Shader data types */
 typedef struct Shader Shader;
 struct Shader {

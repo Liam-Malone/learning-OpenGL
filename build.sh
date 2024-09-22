@@ -78,7 +78,7 @@ if [[ $glfw == 1 ]]; then
 fi
 
 debug_flags='-g -D_debug'
-release_flags='-Drelease -O3'
+release_flags='-D_release -O3'
 
 compile="$CC $gen_flags"
 if [[ $debug == 1 ]]; then
@@ -91,8 +91,8 @@ fi
 
 built=0
 
-$compile $main -o $out $log && built=1
+$compile $main -o $out && built=1
 
 if [[ $run == 1 ]] && [[ $built == 1 ]]; then
-    $out $run_args
+    $out $run_args $log
 fi

@@ -13,6 +13,7 @@
 #endif
 
 #define global static
+#define _interal static
 
 /* unsigned integer types */
 typedef uint8_t   u8;
@@ -30,21 +31,25 @@ typedef int64_t  i64;
 typedef float f32;
 typedef double f64;
 
-#define slice(T) struct { \
-    T* ptr;               \
-    u64 len;              \
+
+/* Units */
+#define KB(n)  (((u64)(n)) << 10)
+#define MB(n)  (((u64)(n)) << 20)
+#define GB(n)  (((u64)(n)) << 30)
+#define TB(n)  (((u64)(n)) << 40)
+
+#define AlignPow2(x,b) (((x) + (b) - 1)&(~((b) - 1)))
+
+/* Slice "Type" */
+#define slice(T) struct {  \
+    T* ptr;                \
+    u64 len;               \
 }
 
-#define dyn_arr(T) struct { \
-    T* ptr;                 \
-    u64 len;                \
-    u64 cap;                \
+/* Dynamic List Type*/
+#define list(T) struct {  \
+    T* ptr;               \
+    u64 len;              \
+    u64 cap;              \
 } 
 
-typedef struct Color Color;
-struct Color {
-    f32 r;
-    f32 g;
-    f32 b;
-    f32 a;
-};
