@@ -1,20 +1,22 @@
 /* Begin Color Functions */
 global Color Color_HSV_to_RGBA(ColorHSV hsv_color) {
-    TODO;
+    TODO("Add HSV -> RGBA Conversion");
     Color col = {};
     return col;
 }
 global ColorHSV Color_RGBA_to_HSV(Color color) {
-    TODO;
+    TODO("Add RGBA -> HSV Conversion");
     ColorHSV col = {};
     return col;
 }
 
 /* Begin Shader Functions */
 global Shader Shader_load(const char* restrict vs_filepath, const char* restrict fs_filepath) {
+    #ifdef _debug_shader_load
     printf(" :: Shader Loading ::\n   > Attempting to load:\n    vs: %s\n    fs: %s\n\n",
             vs_filepath,
             fs_filepath);
+    #endif
     /* Return var, 0 init */
     Shader shader = {};
 
@@ -51,7 +53,9 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
 
         /* Actually use the buffer to create vert shader */
         {
+            #ifdef _debug_shader_load
             fprintf(stderr, " :: Vert Shader Code ::\n%s\n", vsbuf);
+            #endif
 
             vert_shader = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vert_shader, 1, &vsbuf, NULL);
@@ -93,7 +97,9 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
 
         /* Actually use the buffer to create frag shader */
         {
+            #ifdef _debug_shader_load
             fprintf(stderr, " :: Frag Shader Code ::\n%s\n", fsbuf);
+            #endif
 
             frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(frag_shader, 1, &fsbuf, NULL);
@@ -138,7 +144,9 @@ global Shader Shader_load(const char* restrict vs_filepath, const char* restrict
         glDeleteShader(frag_shader);
         vert_shader = frag_shader = 0;
 
+        #ifdef _debug_shader_load
         printf("  :: Shader Load Successful!! ::\n");
+        #endif
     }
     
 exit: 
