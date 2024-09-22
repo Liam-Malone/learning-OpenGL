@@ -13,6 +13,7 @@ glfw=1
 main="src/main.c"
 next_is_log=0
 log_cmd=""
+debug_shader_load=0
 
 # check args
 for var in "$@"; do
@@ -33,6 +34,8 @@ for var in "$@"; do
         main="src/main-rgfw.c"
     elif [ $var == "--" ]; then
         add_args=1
+    elif [ $var == "dsl" ]; then
+        debug_shader_load=1
     fi
 
     if [[ $next_is_compiler == 1 ]]; then
@@ -82,6 +85,10 @@ fi
 
 debug_flags="-g -D_debug -Wno-incompatible-pointer-types-discards-qualifiers"
 release_flags='-D_release -O3'
+
+if [[ $debug_shader_load == 1 ]]; then
+    debug_flags="$debug_flags -D_debug_shader_load"
+fi
 
 compile="$CC $gen_flags"
 if [[ $debug == 1 ]]; then
