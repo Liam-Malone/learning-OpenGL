@@ -1,9 +1,11 @@
 #include <stdint.h>
 
+#define glue(s1, s2) s1 ## s2
+
 #ifdef _debug 
-#define TODO 
+#define TODO(msg) 
 #else
-#define TODO static_assert(false, "DO NOT COMPILE A RELEASE BUILD WITHOUT RESOLVING TODOs")
+#define TODO(msg) static_assert(false, "\n      :: TODO: " ## msg ## " ::")
 #endif
 
 #define auto static_assert(false, "No `auto` in the codebase!!");
