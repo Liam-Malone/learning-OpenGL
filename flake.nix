@@ -13,6 +13,13 @@
     {
       devShells = forEachSupportedSystem({ pkgs }: {
         default = pkgs.mkShell {
+          packages = with pkgs; [
+            clang
+            gcc
+            gdb
+            valgrind
+            zig
+          ];
           buildInputs = with pkgs; [
             alsa-lib
             clang
@@ -20,14 +27,9 @@
             gdb
             gf
             glfw
-            gtk3
-            gtk4
-            libGL
-            libdecor
             libpulseaudio
             libxkbcommon
             mesa
-            python3
             wayland
             xorg.libX11
             xorg.libX11.dev

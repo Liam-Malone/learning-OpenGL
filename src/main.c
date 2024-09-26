@@ -212,6 +212,9 @@ int main(void) {
         Shader_get_uniform_location(my_shader, "tex2"),
     };
 
+    /* Lin-Alg Transformations */
+    Matrix trans_mat = Matrix_identity();
+
     /* window loop */
     while (!glfwWindowShouldClose(window))
     {
