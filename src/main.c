@@ -213,7 +213,7 @@ int main(void) {
     };
 
     /* Lin-Alg Transformations */
-    Matrix trans_mat = Matrix_identity();
+    // Matrix trans_mat = Matrix_identity();
 
     /* window loop */
     while (!glfwWindowShouldClose(window))

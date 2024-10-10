@@ -24,8 +24,6 @@
             alsa-lib
             clang
             gcc
-            gdb
-            gf
             glfw
             libpulseaudio
             libxkbcommon
