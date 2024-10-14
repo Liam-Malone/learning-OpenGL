@@ -39,12 +39,18 @@ typedef int64_t  bool64;
 typedef float    f32;
 typedef double   f64;
 
-
 /* Units */
 #define KB(n)  (((u64)(n)) << 10)
 #define MB(n)  (((u64)(n)) << 20)
 #define GB(n)  (((u64)(n)) << 30)
 #define TB(n)  (((u64)(n)) << 40)
+
+/* Clamps */
+#define Min(A,B)      (((A)<(B))?(A):(B))
+#define Max(A,B)      (((A)>(B))?(A):(B))
+#define ClampTop(A,X) Min(A,X)
+#define ClampBot(X,B) Max(X,B)
+#define Clamp(A,X,B)  (((X)<(A))?(A):((X)>(B))?(B):(X))
 
 /* Need to move to mem-related code */
 #define AlignPow2(x,b) (((x) + (b) - 1)&(~((b) - 1)))
@@ -61,4 +67,3 @@ typedef double   f64;
     u64 len;              \
     u64 cap;              \
 } 
-

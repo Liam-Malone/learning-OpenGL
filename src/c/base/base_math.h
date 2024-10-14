@@ -17,40 +17,70 @@ union Vec4f32 {
         f32 b;
         f32 a;
     };
+    f32 ptr[4];
 };
 
-typedef struct Vec3f32 Vec3f32;
-struct Vec3f32 {
-    f32 x;
-    f32 y;
-    f32 z;
+typedef union Vec3f32 Vec3f32;
+union Vec3f32 {
+    struct {
+        f32 x;
+        f32 y;
+        f32 z;
+    };
+    struct {
+        f32 r;
+        f32 g;
+        f32 b;
+    };
+    f32 ptr[3];
+};
+typedef union Vec2f32 Vec2f32;
+union Vec2f32 {
+    struct {
+        f32 x;
+        f32 y;
+    };
+    f32 ptr[2];
 };
 
-typedef struct Vec2f32 Vec2f32;
-struct Vec2f32 {
-    f32 x;
-    f32 y;
+typedef union Vec4i32 Vec4i32;
+union Vec4i32 {
+    struct {
+        i32 x;
+        i32 y;
+        i32 z;
+        i32 w;
+    };
+    struct {
+        i32 r;
+        i32 g;
+        i32 b;
+        i32 a;
+    };
+    i32 ptr[4];
 };
 
-typedef struct Vec4i32 Vec4i32;
-struct Vec4i32 {
-    i32 x;
-    i32 y;
-    i32 z;
-    i32 w;
+typedef union Vec3i32 Vec3i32;
+union Vec3i32 {
+    struct {
+        i32 x;
+        i32 y;
+        i32 z;
+    };
+    struct {
+        i32 r;
+        i32 g;
+        i32 b;
+    };
+    i32 ptr[3];
 };
-
-typedef struct Vec3i32 Vec3i32;
-struct Vec3i32 {
-    i32 x;
-    i32 y;
-    i32 z;
-};
-
-typedef struct Vec2i32 Vec2i32;
-struct Vec2i32 {
-    i32 x;
-    i32 y;
+typedef union Vec2i32 Vec2i32;
+union Vec2i32 {
+    struct {
+        i32 x;
+        i32 y;
+    };
+    i32 ptr[2];
 };
 
 typedef Vec4f32 Quaternion;

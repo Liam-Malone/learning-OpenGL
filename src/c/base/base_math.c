@@ -14,7 +14,7 @@ global f32 Vec2f32_mag(Vec2f32 vec) {
 global Vec4f32 Vec4f32_normalize(Vec4f32 vec) {
     const f32 mag = Vec4f32_mag(vec);
     if (mag == 0) 
-        return (Vec4f32) { 0, 0, 0, 0 };
+        return (Vec4f32) { { 0, 0, 0, 0 } };
 
     return (Vec4f32) {
         .x = vec.x / mag,
@@ -26,7 +26,7 @@ global Vec4f32 Vec4f32_normalize(Vec4f32 vec) {
 global Vec3f32 Vec3f32_normalize(Vec3f32 vec) {
     const f32 mag = Vec3f32_mag(vec);
     if (mag == 0) 
-        return (Vec3f32) { 0, 0, 0 };
+        return (Vec3f32) { { 0, 0, 0 } };
 
     return (Vec3f32) {
         .x = vec.x / mag,
@@ -37,7 +37,7 @@ global Vec3f32 Vec3f32_normalize(Vec3f32 vec) {
 global Vec2f32 Vec2f32_normalize(Vec2f32 vec) {
     const f32 mag = Vec2f32_mag(vec);
     if (mag == 0) 
-        return (Vec2f32) { 0, 0 };
+        return (Vec2f32) { { 0, 0 } };
 
     return (Vec2f32) {
         .x = vec.x / mag,
@@ -132,7 +132,7 @@ global f32 Vec2i32_mag(Vec2i32 vec)  {
 global Vec4i32 Vec4i32_normalize(Vec4i32 vec) {
     const f32 mag = Vec4i32_mag(vec);
     if (mag == 0) 
-        return (Vec4i32) { 0, 0, 0, 0 };
+        return (Vec4i32) { { 0, 0, 0, 0 } };
 
     return (Vec4i32) {
         .x = (i32) ((i32) vec.x / mag),
@@ -145,7 +145,7 @@ global Vec4i32 Vec4i32_normalize(Vec4i32 vec) {
 global Vec3i32 Vec3i32_normalize(Vec3i32 vec) {
     const f32 mag = Vec3i32_mag(vec);
     if (mag == 0) 
-        return (Vec3i32) { 0, 0, 0 };
+        return (Vec3i32) { { 0, 0, 0 } };
 
     return (Vec3i32) {
         .x = (i32) ((i32) vec.x / mag),
@@ -157,7 +157,7 @@ global Vec3i32 Vec3i32_normalize(Vec3i32 vec) {
 global Vec2i32 Vec2i32_normalize(Vec2i32 vec) {
     const f32 mag = Vec2i32_mag(vec);
     if (mag == 0) 
-        return (Vec2i32) { 0, 0, };
+        return (Vec2i32) { { 0, 0 } };
 
     return (Vec2i32) {
         .x = (i32) ((i32) vec.x / mag),

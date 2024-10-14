@@ -1,4 +1,3 @@
-
 #define StandardBufSize 4096
 typedef struct DataBuf DataBuf;
 struct DataBuf {
