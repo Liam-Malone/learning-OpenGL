@@ -6,13 +6,20 @@
 #include <stdio.h>
 
 /* 3rd party library includes */
+/* [h] files */
 #include "external/glad.h"
-#include "external/glad.c"
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC /* Ensure Static for Single Translation Unit */
 #include "external/stb_image.h" /* STB library for Image Loading */
 
+/* [c] files */
+#include "external/glad.c"
+
+
 /* project file includes */
+/* [h] files */
+#include "base/base.h"
+
 /* [c] files */
 #define _GLFW_X11 1
 #include "my_glfw.c" /* Single Translation Unit Build */

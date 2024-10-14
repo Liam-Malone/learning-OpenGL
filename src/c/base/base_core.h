@@ -18,10 +18,10 @@
 #define _interal static
 
 /* unsigned integer types */
-typedef uint8_t   u8;
-typedef uint16_t  u16;
-typedef uint32_t  u32;
-typedef uint64_t  u64;
+typedef uint8_t  u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
 /* signed integer types */
 typedef int8_t   i8;
@@ -29,9 +29,15 @@ typedef int16_t  i16;
 typedef int32_t  i32;
 typedef int64_t  i64;
 
+/* various sized bool types */
+typedef int8_t   bool8;
+typedef int16_t  bool16;
+typedef int32_t  bool32;
+typedef int64_t  bool64;
+
 /* floating point types */
-typedef float f32;
-typedef double f64;
+typedef float    f32;
+typedef double   f64;
 
 
 /* Units */
@@ -40,6 +46,7 @@ typedef double f64;
 #define GB(n)  (((u64)(n)) << 30)
 #define TB(n)  (((u64)(n)) << 40)
 
+/* Need to move to mem-related code */
 #define AlignPow2(x,b) (((x) + (b) - 1)&(~((b) - 1)))
 
 /* Slice "Type" */

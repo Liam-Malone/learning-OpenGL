@@ -3,12 +3,20 @@
 typedef f32 Rad;
 typedef f32 Deg;
 
-typedef struct Vec4f32 Vec4f32;
-struct Vec4f32 {
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
+typedef union Vec4f32 Vec4f32;
+union Vec4f32 {
+    struct {
+        f32 x;
+        f32 y;
+        f32 z;
+        f32 w;
+    };
+    struct {
+        f32 r;
+        f32 g;
+        f32 b;
+        f32 a;
+    };
 };
 
 typedef struct Vec3f32 Vec3f32;

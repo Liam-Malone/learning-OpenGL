@@ -11,16 +11,16 @@ pub const GLFW_OPENGL_CORE_PROFILE = glfw.GLFW_OPENGL_CORE_PROFILE;
 
 // Bind Types
 pub const Input = struct {
-    pub const Key = enum (c_int) {
+    pub const Key = enum(c_int) {
         hat_centered = 0,
         hat_up = 1,
         hat_right = 2,
         hat_down = 4,
         hat_left = 8,
-        hat_right_up = (glfw.GLFW_HAT_RIGHT | glfw.GLFW_HAT_UP),
-        hat_right_down = (glfw.GLFW_HAT_RIGHT | glfw.GLFW_HAT_DOWN),
-        hat_left_up = (glfw.GLFW_HAT_LEFT  | glfw.GLFW_HAT_UP),
-        hat_left_down = (glfw.GLFW_HAT_LEFT  | glfw.GLFW_HAT_DOWN),
+        hat_right_up = (@intFromEnum(Key.hat_right) | @intFromEnum(Key.hat_up)),
+        hat_right_down = (@intFromEnum(Key.hat_right) | @intFromEnum(Key.hat_down)),
+        hat_left_up = (@intFromEnum(Key.hat_left) | @intFromEnum(Key.hat_up)),
+        hat_left_down = (@intFromEnum(Key.hat_left) | @intFromEnum(Key.hat_down)),
 
         key_unknown = -1,
         key_null = -2,
@@ -152,7 +152,7 @@ pub const Input = struct {
         //key_last = glfw.GLFW_KEY_MENU,
 
     };
-    pub const MouseButton = enum (c_int) {
+    pub const MouseButton = enum(c_int) {
         left = 0,
         right,
         middle,
@@ -162,13 +162,12 @@ pub const Input = struct {
         mb_7,
         mb_8,
     };
-    pub const Action = enum (c_int) {
+    pub const Action = enum(c_int) {
         release = 0,
         press,
         repeat,
     };
-    pub const Modifier = enum (c_int) {
-    };
+    pub const Modifier = enum(c_int) {};
 };
 
 // Re-Export Types
@@ -181,7 +180,6 @@ pub fn setWindowShouldClose(window: *Window, b: bool) void {
     } else {
         glfw.glfwSetWindowShouldClose(window, glfw.GLFW_FALSE);
     }
-
 }
 
 pub fn getKey(window: *Window, key: Input.Key) Input.Action {
@@ -190,7 +188,6 @@ pub fn getKey(window: *Window, key: Input.Key) Input.Action {
 pub fn getMouseButton(window: *Window, button: Input.MouseButton) Input.Action {
     return @enumFromInt(glfw.glfwGetMouseButton(window, @intFromEnum(button)));
 }
-
 
 // Re-Export Functions
 pub const windowHint = glfw.glfwWindowHint;

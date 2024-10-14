@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) !void {
 
     const exe = b.addExecutable(.{
         .name = "learnGL-zig",
-        .root_source_file = b.path("src/main.zig"),
+        .root_source_file = b.path("src/zig/main.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -47,5 +47,4 @@ pub fn build(b: *std.Build) !void {
 
     const run_step = b.step("run", "Run the program");
     run_step.dependOn(&run_cmd.step);
-
 }
